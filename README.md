@@ -8,13 +8,11 @@ p-center-problem
 │   ├── main.py
 │   ├── io
 │   │   ├── read_instance.py
-│   │   ├── write_solution.py
+│   │   ├── display_solution.py
 │   │   └── display_instance.py
-│   ├── solver
-│   │   ├── solve.py
-│   │   └── model.py
-│   └── utils
-│       └── __init__.py
+│   └── solver
+│       ├── solve.py
+│       └── model.py
 ├── requirements.txt
 └── README.md
 ```
