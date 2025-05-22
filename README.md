@@ -6,13 +6,17 @@ Gurobi code example to solve the classical p-center problem.
 p-center-problem
 ├── src
 │   ├── main.py
-│   ├── io
+│   ├── io_utils
 │   │   ├── read_instance.py
 │   │   ├── display_solution.py
 │   │   └── display_instance.py
 │   └── solver
 │       ├── solve.py
 │       └── model.py
+├── instances
+│   ├── pmed1.txt
+│   │    ...
+│   └── pmed40.txt
 ├── requirements.txt
 └── README.md
 ```
