@@ -4,10 +4,17 @@ from io_utils.read_instance import read_instance
 from io_utils.display_instance import display_instance
 from io_utils.display_solution import display_solution
 from solver.solve import solve
+import sys
 
 def main():
-    # user input for instance file
-    file_path = input("path to the instance file: ")
+
+    # If there is an argument, use it as the instance file path
+    
+    if len(sys.argv) > 1:
+        file_path = sys.argv[1]
+    else:
+        # user input for instance file
+        file_path = input("path to the instance file: ")
 
     # Instance reading
     instance_data = read_instance(file_path)
