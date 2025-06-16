@@ -1,3 +1,5 @@
 gurobipy
 numpy
 pandas
+scipy
+matplotlib
