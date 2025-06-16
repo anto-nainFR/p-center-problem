@@ -94,7 +94,7 @@ $[1, \sqrt{100*nclients}]$ following the litterature
 
 ## Functions Overview
 - **Reading Instances**: Use `read_instance.py` to load problem instances.
-- **Writing Solutions**: Use `write_solution.py` to save the results.
+- **Displaying Solutions**: Use `display_solution.py` to show the results.
 - **Displaying Instances**: Use `display_instance.py` to visualize the problem data.
 - **Solving the Problem**: The `solve.py` file contains the logic to find the optimal solution using Gurobi.
 - **Modeling**: The `model.py` file is responsible for creating the Gurobi model based on the instance data.
