@@ -89,7 +89,7 @@ python src/io_utils/generate_instance.py \
 
 #### Coordinate Range
 All coordinates are automatically generated in the range:
-$[1, \sqrt{100*n\_clients}]$ following the litterature 
+$[1, \sqrt{100*nclients}]$ following the litterature 
 
 
 ## Functions Overview
@@ -98,6 +98,7 @@ $[1, \sqrt{100*n\_clients}]$ following the litterature
 - **Displaying Instances**: Use `display_instance.py` to visualize the problem data.
 - **Solving the Problem**: The `solve.py` file contains the logic to find the optimal solution using Gurobi.
 - **Modeling**: The `model.py` file is responsible for creating the Gurobi model based on the instance data.
+- **Generator**: The `generate_instance.py` is used to generate instances according to different parameters
 
 ## Contributing
 Feel free to contribute to the project by submitting issues or pull requests.
