@@ -11,9 +11,10 @@ p-center-problem
 │   │   ├── display_solution.py
 │   │   ├── display_instance.py
 │   │   └── generate_instance.py
+│   ├── models
+│   │   └── classical.py
 │   └── solver
-│       ├── solve.py
-│       └── model.py
+│       └── solve.py
 ├── instances
 │   ├── pmed
 │   │   ├── pmed1.txt
@@ -45,10 +46,14 @@ pip install -r requirements.txt
 2. Run the main application:
 
 ```
-python src/main.py
+python -m src.main
 ```
 
 3. Follow the prompts to read instances, solve the problem, and display the results.
+or you can just 
+```
+python -m src.main <instance path>
+```
 
 ### Instance Generator
 This project includes a parameterizable generator for synthetic p-center problem instances.
