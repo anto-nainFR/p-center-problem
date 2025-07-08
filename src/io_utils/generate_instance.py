@@ -62,17 +62,29 @@ def save_to_json(coords, file_path):
 def save_distance_matrix_txt(coords, p_centers, file_path, integer=False):
     from scipy.spatial.distance import cdist
     dist_matrix = cdist(coords, coords)
+    num_nodes = len(coords)
+    num_edges = num_nodes * (num_nodes - 1) // 2
 
     if integer:
         dist_matrix = np.rint(dist_matrix).astype(int)
 
     with open(file_path, 'w') as f:
-        f.write(f"{len(coords)} {p_centers}\n")
-        for row in dist_matrix:
-            if integer:
-                f.write(' '.join(str(d) for d in row) + '\n')
-            else:
-                f.write(' '.join(f"{d:.2f}" for d in row) + '\n')
+        f.write(f"{num_nodes} {num_edges} {p_centers}\n")
+        
+        for i in range(num_nodes):
+            for j in range(i + 1, num_nodes):  # upper triangle only (no duplicates)
+                dist = dist_matrix[i][j]
+                if integer:
+                    f.write(f"{i} {j} {int(dist)}\n")
+                else:
+                    f.write(f"{i} {j} {dist:.2f}\n")
+
+        # OLD FORMAT : print the full distance matrix
+        # for row in dist_matrix:
+        #     if integer:
+        #         f.write(' '.join(str(d) for d in row) + '\n')
+        #     else:
+        #         f.write(' '.join(f"{d:.2f}" for d in row) + '\n')
 
 def plot_instance(coords, title="Generated Instance"):
     import matplotlib.pyplot as plt
