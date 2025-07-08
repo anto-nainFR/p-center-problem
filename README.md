@@ -58,7 +58,7 @@ python -m src.main <instance path>
 ### Instance Generator
 This project includes a parameterizable generator for synthetic p-center problem instances.
 
-#### Generate a New Instance
+#### Basic usage
 You can generate test instances with custom size, layout, and options using the following command :
 ```
 python src/io_utils/generate_instance.py \
@@ -71,7 +71,7 @@ python src/io_utils/generate_instance.py \
     --show_plot
 ```
 
-#### Arguments
+#### Common arguments
 | Argument              | Description                                                                              |
 | --------------------- | ---------------------------------------------------------------------------------------- |
 | `--n_clients`         | Number of demand points (**required**)                                                   |
@@ -95,6 +95,41 @@ python src/io_utils/generate_instance.py \
 #### Coordinate Range
 All coordinates are automatically generated in the range:
 $[1, \sqrt{100*nclients}]$ following the litterature 
+
+
+#### Capacitated instances
+In many real-world applications, facilities (centers) have **limited capacity** and cannot serve an unlimited number of clients. To model this more realistically, we extend the classical p-center problem by introducing:
+
+- **Demands** for each client: how much service or resource they require.
+- **Capacities** for each center: the maximum total demand a center can serve.
+
+This transforms the problem into a **Capacitated p-Center Problem (CpCP)**, which is more challenging but better reflects logistics, emergency response, and distribution systems.
+
+To generate a **capacitated** instance, you must include the `--capacitated` flag and provide demand-related options:
+```
+python src/io_utils/generate_instance.py \
+    --n_clients 100 \
+    --p_centers 5 \
+    --space_type euclidean \
+    --seed 42 \
+    --capacitated \
+    --tau 0.9 \
+    --dem_min 5 \
+    --dem_max 20 \
+    --demand_distribution uniform
+```
+##### Additional Required Arguments for Capacitated Instances:
+| Argument                | Description                                                                 |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `--capacitated`         | Enables capacitated generation mode                                         |
+| `--tau`                 | coefficient $\in$ [0, 1]. Generally around 0.8 and 0.9. |
+| `--dem_min`             | Minimum client demand                                                       |
+| `--dem_max`             | Maximum client demand                                                       |
+| `--demand_distribution` | `uniform` or `normal` (for demand generation)                               |
+
+As for distances, capacities are generated following the literature : 
+
+$$\left[\frac{all\_dem\cdot0.8}{p\cdot \tau}, \frac{all\_dem\cdot1.2}{p\cdot \tau}\right]$$
 
 
 ## Functions Overview
