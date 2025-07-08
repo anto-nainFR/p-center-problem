@@ -1,3 +1,5 @@
 src/solver/__pycache__
 src/io_utils/__pycache__
 .venv
+.DS_Store
+*.pyc

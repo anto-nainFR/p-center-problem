@@ -1,9 +1,9 @@
 # p-center-problem/src/main.py
 
-from io_utils.read_instance import read_instance
-from io_utils.display_instance import display_instance
-from io_utils.display_solution import display_solution
-from solver.solve import solve
+from src.io_utils.read_instance import read_instance
+from src.io_utils.display_instance import display_instance
+from src.io_utils.display_solution import display_solution
+from src.solver.solve import solve
 import sys
 
 def main():
@@ -20,7 +20,7 @@ def main():
     instance_data = read_instance(file_path)
 
     # Problem solving
-    solution = solve(instance_data)
+    solution = solve(instance_data, model_class='classical')
 
     # Instance informations display
     # display_instance(instance_data)

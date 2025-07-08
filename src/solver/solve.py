@@ -1,46 +1,49 @@
-def solve(instance_data):
-    from gurobipy import Model, GRB
+from gurobipy import GRB
+from ..models.classical import classical_model
 
-    # Create a new model
-    model = Model("p-center")
+def solve(instance_data, model_class):
+    """Solve the p-center problem using the specified model class.
+    Args:
+        instance_data (dict): The instance data containing distances, number of nodes, etc.
+        model_class (str): The model class to use : 
+            'classical' for the classical p-center problem.
+    Returns:
+        dict: A dictionary containing the solution with objective value, gurobi status, centers, and assignments.
+    Raises:
+        ValueError: If the model_class is not recognized.
+    """
+    try:
+        # Extract data from instance_data
+        num_nodes = instance_data['num_nodes']
+        solution = None  # Initialize solution to ensure it's always defined
+        
+        if model_class == 'classical': # Classical p-center problem
+            model, x, y = classical_model(instance_data)
+        else:
+            raise ValueError(f"Unknown model_class: {model_class}")
 
-    # Extract data from instance_data
-    distances = instance_data['distances']
-    num_nodes = instance_data['num_nodes']
-    num_edges = instance_data['num_edges']
-    num_centers = instance_data['num_centers']
+        # Optimize the model
+        model.optimize()
 
-    # Create decision variables
-    x = model.addVars(num_nodes,num_nodes, vtype=GRB.BINARY, name="x")  # Assignment of clients to centers
-    y = model.addVars(num_nodes, vtype=GRB.BINARY, name="y")  # Location of centers
+        if (model.Status == GRB.OPTIMAL or model.Status == GRB.SUBOPTIMAL or model.Status == GRB.TIME_LIMIT) and model.SolCount > 0:
+            # Extract the solution
+            if model_class == 'classical':
+                solution = {
+                    'objective_value': model.ObjVal,
+                    'gurobi_status': model.status,
+                    'centers': [j for j in range(num_nodes) if y[j].x > 0.5],
+                    'assignments': {i: j for i in range(num_nodes) for j in range(num_nodes) if x[i, j].X > 0.5}
+                }
+        
+        else:
+            solution = {
+                'objective_value': None,
+                'gurobi_status': model.status,
+                'centers': [],
+                'assignments': {}
+            }
+        return solution
+    except Exception as e:
+        raise ValueError(f"An error occurred while solving the model: {e}")
 
-    # Objective: Minimize the maximum distance from any location to its assigned center
-    max_distance = model.addVar(vtype=GRB.CONTINUOUS, name="max_distance")
-    model.setObjective(max_distance, GRB.MINIMIZE)
-
-    # Constraints
-
-    # There is exactly p centers
-    model.addConstr(y.sum() == num_centers, "num_centers")
-
-    # Each client must be assigned to exactly one center
-    model.addConstrs((x.sum(i, '*') == 1 for i in range(num_nodes)), "client_assignment")
-
-    # Each client must be assigned to an open center
-    model.addConstrs((x[i, j] <= y[j] for i in range(num_nodes) for j in range(num_nodes)), "assignment")
-
-    # The maximum distance from any client to its assigned center must be less than or equal to max_distance
-    model.addConstrs((x[i, j] * distances[i][j] <= max_distance for i in range(num_nodes) for j in range(num_nodes)), "max_distance_constraint")
     
-    # Optimize the model
-    model.optimize()
-
-    # Extract the solution
-    solution = {
-        'objective_value': model.ObjVal,
-        'gurobi_status': model.status,
-        'centers': [j for j in range(num_nodes) if y[j].x > 0.5],
-        'assignments': {i: j for i in range(num_nodes) for j in range(num_nodes) if x[i, j].X > 0.5}
-    }
-
-    return solution
