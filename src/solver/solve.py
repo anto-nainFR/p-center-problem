@@ -1,5 +1,6 @@
 from gurobipy import GRB
 from ..models.classical import classical_model
+from ..models.capacitated import capacitated_model
 
 def solve(instance_data, model_class):
     """Solve the p-center problem using the specified model class.
@@ -19,6 +20,8 @@ def solve(instance_data, model_class):
         
         if model_class == 'classical': # Classical p-center problem
             model, x, y = classical_model(instance_data)
+        elif model_class == 'capacitated': # Capacitated p-center problem
+            model, x, y = capacitated_model(instance_data)
         else:
             raise ValueError(f"Unknown model_class: {model_class}")
 
@@ -27,7 +30,7 @@ def solve(instance_data, model_class):
 
         if (model.Status == GRB.OPTIMAL or model.Status == GRB.SUBOPTIMAL or model.Status == GRB.TIME_LIMIT) and model.SolCount > 0:
             # Extract the solution
-            if model_class == 'classical':
+            if model_class == 'classical' or model_class == 'capacitated':
                 solution = {
                     'objective_value': model.ObjVal,
                     'gurobi_status': model.status,
