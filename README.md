@@ -129,15 +129,16 @@ python src/io_utils/generate_instance.py \
 
 As for distances, capacities are generated following the literature : 
 
-$$\left[\frac{all\_dem\cdot0.8}{p\cdot \tau}, \frac{all\_dem\cdot1.2}{p\cdot \tau}\right]$$
+$$\left[\frac{(\sum_{i\in N}q_i)\cdot0.8}{p\cdot \tau}, \frac{(\sum_{i\in N}q_i)\cdot1.2}{p\cdot \tau}\right]$$
 
+where $q_i$ is the demand of node $i$ so that $\sum_{i\in N}q_i$ is the total demand.
 
 ## Functions Overview
 - **Reading Instances**: Use `read_instance.py` to load problem instances.
 - **Displaying Solutions**: Use `display_solution.py` to show the results.
 - **Displaying Instances**: Use `display_instance.py` to visualize the problem data.
 - **Solving the Problem**: The `solve.py` file contains the logic to find the optimal solution using Gurobi.
-- **Modeling**: The `model.py` file is responsible for creating the Gurobi model based on the instance data.
+- **Modeling**: The `models/` directory gather the different models to solve the p-center problem or one of its variants (Gurobi compatible)
 - **Generator**: The `generate_instance.py` is used to generate instances according to different parameters
 
 ## Contributing
