@@ -55,20 +55,52 @@ or you can just
 python -m src.main <instance path>
 ```
 
+#### Capacitated model
+
+Several variants of the p-center problem exist in the literature, including the p-center problem with capacity constraints. 
+This variant adds a demand to each node (customer) to differentiate them. We could compare the demands to the number of people in a city. Moreover, in the capacity constraints, we'll also differentiate between potential facilities. For example, if the facilities are schools, they would have different capacities (in terms of number of pupils)
+
+To test the capacitated version of the p-center problem, you can run:
+```
+python -m src.main <instance path> --capacitated
+```
+
+**Please note that the instance must have the demand and capacity data.**
+
+#### Model with failure foresight
+
+A variant of the p-centers problem incorporates the notion of failures and failure management, where the objective is to predict future center assignments in the event of a main center failure. In the literature, several methods exist to solve this problem, such as the use of scenarios or the limitation to a single backup center.
+
+In the model implemented here, we consider a single backup center per customer. In addition, we maintain capacity constraints. A single center can therefore serve as both the main center for some customers and the backup center for others. However, it is essential to respect capacity constraints, even in the event of a breakdown, i.e. when customers are reassigned following the failure of their main center. To guarantee this, we introduce an overload coefficient $\alpha$, representing an additional percentage of capacity, to accommodate redistributed customers.
+
+Note that a backup center must necessarily be at least as close as a main center to each customer it serves. Moreover, for each customer, the main center and the backup center are necessarily different. 
+
+To test the version with failure foresight, you can run:
+```
+python -m src.main <instance path> --failure <alpha>
+```
+where \<alpha\> is a float in [0,1]
+
+
 ### Instance Generator
 This project includes a parameterizable generator for synthetic p-center problem instances.
 
 #### Basic usage
 You can generate test instances with custom size, layout, and options using the following command :
 ```
-python src/io_utils/generate_instance.py \
+python src/io_utils/generate_instance.py \                                                   
     --n_clients 100 \
     --p_centers 5 \
     --space_type euclidean \
     --seed 42 \
     --compute_distances \
     --integer_distances \
-    --show_plot
+    --show_plot \
+    --capacitated \
+    --tau 0.9 \
+    --dem_min 5 \
+    --dem_max 20 \
+    --demand_distribution uniform
 ```
 
 #### Common arguments

@@ -1,4 +1,4 @@
-from gurobipy import Model, GRB
+from gurobipy import Model, GRB, quicksum
 
 def failure_model(instance_data):
     """
@@ -31,33 +31,40 @@ def failure_model(instance_data):
 
     # Constraints
 
-    # Exactly p centers are opened
+    # There is exactly p centers
     model.addConstr(y.sum() == num_centers, "num_centers")
 
-    # Each client assigned to one primary center
-    model.addConstrs((x.sum(i, '*') == 1 for i in range(num_nodes)), name="primary_assignment")
+    # Each client must be assigned to exactly one center (main)
+    model.addConstrs((x.sum(i, '*') == 1 for i in range(num_nodes)), "client_assignment")
 
-    # Each client assigned to one backup center
-    model.addConstrs((w.sum(i, '*') == 1 for i in range(num_nodes)), name="backup_assignment")
+    # Each client must be assigned to exactly one backup center
+    model.addConstrs((w.sum(i, '*') == 1 for i in range(num_nodes)), "backup_assignment")
 
-    # Can't assign to unopened centers
-    model.addConstrs((x[i, j] <= y[j] for i in range(num_nodes) for j in range(num_nodes)), name="assign_if_open_primary")
-    model.addConstrs((w[i, j] <= y[j] for i in range(num_nodes) for j in range(num_nodes)), name="assign_if_open_backup")
+    # Each client must be assigned to an open center (main)
+    model.addConstrs((x[i, j] <= y[j] for i in range(num_nodes) for j in range(num_nodes)), "assignment")
 
-    # Capacity constraints
-    model.addConstrs((sum(x[i, j] * demands[i] for i in range(num_nodes)) <= capacities[j] for j in range(num_nodes)),name="capacity_limit_primary")
+    # Each client must be assigned to an open backup center
+    model.addConstrs((w[i, j] <= y[j] for i in range(num_nodes) for j in range(num_nodes)), "backup_assignment_open")
 
-    # Capacity constraints in case of failure (all clients go to their backups)
-    model.addConstrs((sum(x[i, j] * demands[i] for i in range(num_nodes)) + sum(w[i, j] * demands[i] for i in range(num_nodes)) <= ((1+alpha)*capacities[j]) for j in range(num_nodes)),name="capacity_limit_backup")
+    # The maximum distance from any client to its assigned center must be less than or equal to max_distance
+    model.addConstrs((x[i, j] * distances[i][j] <= max_distance for i in range(num_nodes) for j in range(num_nodes)), "max_distance_constraint")
 
-    # No same center as both primary and backup for a client
-    model.addConstrs((x[i, j] + w[i, j] <= 1 for i in range(num_nodes) for j in range(num_nodes)),name="primary_backup_different")
+    # The distance to the backup center must be at least superior or equal to the primary center distance
+    model.addConstrs((quicksum(w[i, j] * distances[i][j] for j in range(num_nodes)) >= quicksum(x[i, j] * distances[i][j] for j in range(num_nodes)) for i in range(num_nodes)), name="backup_distance_constraint")
 
-    # A backup center is at least as far as the primary center
-    model.addConstrs((w[i, j] * distances[i][j] >= x[i, j] * distances[i][j] for i in range(num_nodes) for j in range(num_nodes)), name="backup_distance_greater_than_primary")
+    # The backup center and the main center must be different
+    model.addConstrs((x[i, j] + w[i, j] <= 1 for i in range(num_nodes) for j in range(num_nodes)), "different_centers")
 
-    # Distance limits
-    model.addConstrs((x[i, j] * distances[i][j] <= max_distance for i in range(num_nodes) for j in range(num_nodes)), name="primary_distance_limit")
-    model.addConstrs((w[i, j] * distances[i][j] <= max_distance for i in range(num_nodes) for j in range(num_nodes)), name="backup_distance_limit")
+    # Respect capacity constraints
+    model.addConstrs((sum(x[i, j] * demands[i] for i in range(num_nodes)) <= capacities[j] for j in range(num_nodes)),name="capacity_limit")
+
+    # Respect capacity constraints
+    model.addConstrs((sum(x[i, j] * demands[i] for i in range(num_nodes)) + sum(w[i, j] * demands[i] for i in range(num_nodes)) <= (1+alpha)*capacities[j] for j in range(num_nodes)),name="capacity_limit")
+
+    # Maximum distance constraint
+    model.addConstrs((x[i, j] * distances[i][j] <= max_distance for i in range(num_nodes) for j in range(num_nodes)),name="distance_limit")
+
+
+
 
     return model, x, w, y
