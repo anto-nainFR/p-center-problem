@@ -1,4 +1,4 @@
-def read_instance(file_path, capacitated=False):
+def read_instance(file_path, capacitated=False, failure=False):
     instance_data = {}
     with open(file_path, 'r') as file:
         # Only pmed instance are supported here, add other formats depending on the instance family
@@ -33,7 +33,7 @@ def read_instance(file_path, capacitated=False):
 
         instance_data['distances'] = distances
 
-        if capacitated:
+        if capacitated or failure:
             # Read capacities
             capacities = []
             for _ in range(num_nodes):

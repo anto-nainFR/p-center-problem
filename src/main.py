@@ -39,7 +39,7 @@ def main():
         model_class = "capacitated"
     
         
-    instance_data = read_instance(file_path, capacitated=is_capacitated)
+    instance_data = read_instance(file_path, capacitated=is_capacitated, failure=is_failure)
 
     # Problem solving
     solution = solve(instance_data, model_class=model_class)
