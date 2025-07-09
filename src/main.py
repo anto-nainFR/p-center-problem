@@ -16,7 +16,7 @@ def main():
     
     # if it is the capacitated version, add the argument
     parser.add_argument('--capacitated', action='store_true', help='If set, the solver will handle capacitated p-center problem instances.')
-    parser.add_argument('--failure', action='store_true', help='If set, the solver will handle p-center problem instances with failure foresight.')
+    parser.add_argument('--failure', nargs='?', default=None, help='If set, the solver will handle p-center problem instances with failure foresight.')
     args = parser.parse_args()
     
     if args.file:
@@ -24,6 +24,13 @@ def main():
     else:
         # user input for instance file
         file_path = input("path to the instance file: ")
+
+    alpha = 0.0  # Default value for failure foresight alpha
+    if args.failure:
+        alpha = float(args.failure)
+        if alpha < 0 or alpha > 1:
+            print("Error: alpha must be between 0 and 1.")
+            sys.exit(1)
 
     # Instance reading
     is_capacitated = False
@@ -39,7 +46,7 @@ def main():
         model_class = "capacitated"
     
         
-    instance_data = read_instance(file_path, capacitated=is_capacitated, failure=is_failure)
+    instance_data = read_instance(file_path, capacitated=is_capacitated, failure=is_failure, alpha=alpha)
 
     # Problem solving
     solution = solve(instance_data, model_class=model_class)
