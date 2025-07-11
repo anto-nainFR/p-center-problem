@@ -1,4 +1,4 @@
-def read_instance(file_path, capacitated=False, failure=False, alpha=0.0):
+def read_instance_cap_fail(file_path, capacitated=False, failure=False, alpha=0.0):
     instance_data = {}
     with open(file_path, 'r') as file:
         # Only pmed instance are supported here, add other formats depending on the instance family
@@ -53,3 +53,14 @@ def read_instance(file_path, capacitated=False, failure=False, alpha=0.0):
             instance_data['alpha'] = alpha
         
     return instance_data
+
+
+def read_instance_stratified(file_path):
+    
+
+
+def read_instance(file_path, capacitated=False, failure=False, alpha=0.0, stratified=False):
+    if capacitated or failure:
+        return read_instance_cap_fail(file_path, capacitated=capacitated, failure=failure, alpha=alpha)
+    elif stratified:
+        return read_instance_stratified(file_path)

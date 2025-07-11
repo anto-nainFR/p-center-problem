@@ -2,6 +2,7 @@ from gurobipy import GRB
 from ..models.classical import classical_model
 from ..models.capacitated import capacitated_model
 from ..models.failure import failure_model
+from ..models.stratified import stratified_model
 
 def solve(instance_data, model_class):
     """Solve the p-center problem using the specified model class.
@@ -25,6 +26,8 @@ def solve(instance_data, model_class):
             model, x, y = capacitated_model(instance_data)
         elif model_class == 'failure':
             model, x, w, y = failure_model(instance_data)
+        elif model_class == 'stratified':
+            model, x, w, y, A, B = stratified_model(instance_data)
         else:
             raise ValueError(f"Unknown model_class: {model_class}")
 
@@ -40,7 +43,7 @@ def solve(instance_data, model_class):
                     'centers': [j for j in range(num_nodes) if y[j].x > 0.5],
                     'assignments': {i: j for i in range(num_nodes) for j in range(num_nodes) if x[i, j].X > 0.5}
                 }
-            elif model_class == 'failure':
+            elif model_class == 'failure' or model_class == 'stratified':
                 solution = {
                     'objective_value': model.ObjVal,
                     'gurobi_status': model.status,

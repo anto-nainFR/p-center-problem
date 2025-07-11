@@ -17,6 +17,7 @@ def main():
     # if it is the capacitated version, add the argument
     parser.add_argument('--capacitated', action='store_true', help='If set, the solver will handle capacitated p-center problem instances.')
     parser.add_argument('--failure', nargs='?', default=None, help='If set, the solver will handle p-center problem instances with failure foresight.')
+    parser.add_argument('--stratified', nargs='?', default=None, help='If set, the solver will handle p-center problem instances with failure foresight.')
     args = parser.parse_args()
     
     if args.file:
@@ -35,6 +36,7 @@ def main():
     # Instance reading
     is_capacitated = False
     is_failure = False
+    is_stratified = False
     model_class = "classical"
     if args.failure:
         # If the instance is with failure foresight, read the failure foresight instance
@@ -44,9 +46,13 @@ def main():
         # If the instance is capacitated, read the capacitated instance
         is_capacitated = True
         model_class = "capacitated"
+    elif args.stratified:
+        # If the instance is stratified, read the stratified instance
+        is_stratified = True
+        model_class = "stratified"
     
         
-    instance_data = read_instance(file_path, capacitated=is_capacitated, failure=is_failure, alpha=alpha)
+    instance_data = read_instance(file_path, capacitated=is_capacitated, failure=is_failure, alpha=alpha, stratified=is_stratified)
 
     # Problem solving
     solution = solve(instance_data, model_class=model_class)
